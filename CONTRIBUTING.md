@@ -1,6 +1,6 @@
-# Contributing to Joycon2Android
+# Contributing to JoyconOneAndroid
 
-Thanks for helping improve Joycon2Android! This covers setup, the standards a change must meet, and
+Thanks for helping improve JoyconOneAndroid! This covers setup, the standards a change must meet, and
 how to get it merged.
 
 ## Coding standards

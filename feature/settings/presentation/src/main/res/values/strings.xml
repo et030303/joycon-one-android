@@ -7,6 +7,8 @@
     <string name="settings_faster_updates_description">Joy-Cons send input about twice as often for smoother motion and quicker buttons but uses more battery.</string>
     <string name="settings_block_device_motion_title">Ignore this device\'s motion in Eden</string>
     <string name="settings_block_device_motion_description">Eden adds this device\'s gyro to Player 1, which makes controller motion stutter. Lifted when the Virtual Gamepad and DSU are both off.</string>
+    <string name="settings_remote_play_face_buttons_title">Remote play face buttons</string>
+    <string name="settings_remote_play_face_buttons_description">Sends A, B, X and Y by position instead of by name, so a Joy-Con\'s right button is Circle in PlayStation remote play. Leave off for emulators.</string>
     <string name="settings_block_device_motion_needs_shizuku">Needs Shizuku running.</string>
     <string name="kofi_banner">Support on Ko-fi - tips go towards controllers and devices for development and testing (and coffee!)</string>
 </resources>

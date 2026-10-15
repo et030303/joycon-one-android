@@ -26,6 +26,14 @@ object ReportMapper {
         JoyconButton.RS.id to 14,
     )
 
+    // Position, not name: PlayStation remote play reads BUTTON_A as Cross, the bottom button.
+    private val REMOTE_PLAY_BUTTON_MAP: Map<String, Int> = BUTTON_MAP + mapOf(
+        JoyconButton.A.id to BUTTON_MAP.getValue(JoyconButton.B.id),
+        JoyconButton.B.id to BUTTON_MAP.getValue(JoyconButton.A.id),
+        JoyconButton.X.id to BUTTON_MAP.getValue(JoyconButton.Y.id),
+        JoyconButton.Y.id to BUTTON_MAP.getValue(JoyconButton.X.id),
+    )
+
     // The two that overflow the gamepad collection, in its trailing vendor collection's byte.
     private val OVERFLOW_MAP: Map<String, Int> = mapOf(
         JoyconButton.GR.id to 0,
@@ -46,7 +54,7 @@ object ReportMapper {
         val pressed = gamepad.pressed
 
         // Bytes 0-1: 15 button bits (little-endian) then one padding bit
-        val buttons = bits(pressed, BUTTON_MAP)
+        val buttons = bits(pressed, if (frame.remotePlayFaceButtons) REMOTE_PLAY_BUTTON_MAP else BUTTON_MAP)
         report[0] = (buttons and 0xFF).toByte()
         report[1] = ((buttons shr 8) and 0xFF).toByte()
 

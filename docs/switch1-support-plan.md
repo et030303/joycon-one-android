@@ -7,6 +7,20 @@ stays minSdk 24 for Joy-Con 2; the Switch 1 source is simply disabled below API 
 Everything downstream of the controller list — assignment, button mapping, UHID virtual gamepad, DSU,
 emulator setup — is reused unchanged. Source: [Joycon_Merger_PRD_and_Prompt.md](../../docs/Joycon_Merger_PRD_and_Prompt.md).
 
+## Status
+
+| Phase | State |
+|---|---|
+| 0 Feasibility | Done on one device (Lenovo TB305FU, Android 15, 2026-10-15); [switch1.md](switch1.md) |
+| 1 Model and decoding | Done |
+| 2 Discovery | Done |
+| 3 Native reader and grab | Done |
+| 4 End-to-end pipeline | Merged pad works in PXPlay; emulator setup and sideways play untested |
+| 5 Product surface | README and name done; connection card copy, graphics, battery, LEDs not |
+| 6 Motion for DSU | Not started |
+| 7 PXPlay identity | Not needed so far: the generic pad is accepted; a face-button toggle was added instead |
+| 8 Stretch | Not started |
+
 ## Where this plan departs from the PRD
 
 | PRD says | Plan | Why |
@@ -113,9 +127,10 @@ Works without Shizuku.
   Exit cleanly on stdin close so a dead app releases the grab.
 - `EvdevReader` (data): starts one reader per Joy-Con through `PrivilegedShell`, mirroring `UhidRelay`;
   feeds `EvdevStateDecoder`.
-- Map `InputDevice` ↔ `/dev/input/eventN` by descriptor/`uniq`, not by enumeration order.
-- Grab only while a player is assigned and an output is on; release otherwise so the raw Joy-Con works
-  as a plain gamepad when the app is idle.
+- Map `InputDevice` ↔ `/dev/input/eventN` by descriptor: the helper lists nodes with their MAC, and
+  `Switch1Joycon.descriptorOf` reproduces Android's hash ([switch1.md](switch1.md)).
+- Grab while a player is assigned (`setPlayerLed`), release when unassigned, so an idle Joy-Con stays a
+  plain gamepad. Unassigned Joy-Cons are still read, ungrabbed, for the L+R assignment combos.
 
 **Exit:** live readout in the app shows every button and both sticks from both Joy-Cons; physical
 devices vanish from other apps while grabbed. Measure reader→Kotlin latency (target < 3 ms p99).

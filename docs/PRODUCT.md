@@ -6,14 +6,15 @@ product
 
 ## Users
 
-Android gaming and emulation enthusiasts using Nintendo Switch 2 **Joy-Con 2** and Pro Controllers
-as gamepads on a phone or tablet. They are comfortable with Developer Options, Shizuku and
+Android gaming and emulation enthusiasts using Nintendo Switch 1 **Joy-Cons**, Switch 2 **Joy-Con 2**
+and Pro Controllers as gamepads on a phone or tablet. They are comfortable with Developer Options, Shizuku and
 per-emulator config. They use the app mid-setup, at a desk or on a couch, often in a dim room and
 *holding a controller in one hand*, and want to get into a game fast and then have the app stay out
 of the way.
 
 The primary jobs:
-- **Connect** — pair one or more Joy-Con 2 over BLE and confirm they're live.
+- **Connect** — pair one or more Joy-Con 2 over BLE, or Switch 1 Joy-Cons in Android's Bluetooth
+  settings, and confirm they're live.
 - **Assign** — map controllers to player slots (P1–P8), single or dual (L+R) layouts.
 - **Enable output** — turn on the virtual gamepad and/or DSU motion server.
 - **Configure an emulator** — one-tap write of controller/motion bindings (Eden, Dolphin).

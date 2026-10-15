@@ -72,3 +72,14 @@ span, `∫ω dt`. Antiparallel means that axis' sign is wrong.
 
 Only pitch and roll are visible this way — yaw turns about gravity itself, which leaves
 the vector unchanged, so verify yaw against the pointer's horizontal response instead.
+
+## Switch 1 probes
+
+Both run from Git Bash with `adb` on the PATH and both Joy-Cons paired; output goes to
+`tools/probe-out/<label>/` (git-ignored).
+
+- `switch1_probe.sh <label>` — device info, `getevent -lp`, `dumpsys input`, and a timed button capture
+  per Joy-Con.
+- `switch1_buttons.sh <label>` — prompts for one control at a time and records the evdev code that fires.
+
+Results: [docs/switch1.md](../docs/switch1.md).

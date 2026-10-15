@@ -70,6 +70,17 @@ shift:
   (right). Eden's config uses numeric keycodes; Dolphin's uses names (`Button L2` = ZL,
   `Select` = −, …).
 
+## Remote play face buttons
+
+Settings → **Remote play face buttons** sends A, B, X and Y by position: A takes B's bit and the reverse,
+X takes Y's and the reverse. Off by default.
+
+- **Android names the bottom button `BUTTON_A`.** A Joy-Con's A is on the right, so by name its A lands on
+  the wrong face button in PlayStation remote play (PXPlay, TB305FU with Switch 1 Joy-Cons, 2026-10-15:
+  A/B and X/Y arrived as Cross/Circle and Square/Triangle swapped).
+- **Only the pad report changes.** Emulator setup binds by keycode name, so the toggle stays off while
+  those bindings are in use.
+
 ## Android keys
 
 Each player's mapping, per console, has an **Android** section: buttons bound to Home, Back or

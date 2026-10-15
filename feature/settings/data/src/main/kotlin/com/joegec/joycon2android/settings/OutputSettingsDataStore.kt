@@ -21,6 +21,7 @@ class OutputSettingsDataStore(context: Context) : OutputSettingsRepository {
         OutputSettings(
             fasterUpdates = prefs[FASTER_UPDATES] ?: defaults.fasterUpdates,
             blockDeviceMotion = prefs[BLOCK_DEVICE_MOTION] ?: defaults.blockDeviceMotion,
+            remotePlayFaceButtons = prefs[REMOTE_PLAY_FACE_BUTTONS] ?: defaults.remotePlayFaceButtons,
         )
     }
 
@@ -32,8 +33,13 @@ class OutputSettingsDataStore(context: Context) : OutputSettingsRepository {
         dataStore.edit { it[BLOCK_DEVICE_MOTION] = enabled }
     }
 
+    override suspend fun setRemotePlayFaceButtons(enabled: Boolean) {
+        dataStore.edit { it[REMOTE_PLAY_FACE_BUTTONS] = enabled }
+    }
+
     private companion object {
         val FASTER_UPDATES = booleanPreferencesKey("fast_motion")
         val BLOCK_DEVICE_MOTION = booleanPreferencesKey("block_device_motion")
+        val REMOTE_PLAY_FACE_BUTTONS = booleanPreferencesKey("remote_play_face_buttons")
     }
 }

@@ -18,6 +18,9 @@ What the kernel and Android do with original Joy-Cons (`057e:2006` left, `057e:2
 | SELinux | Enforcing; `getevent` as shell works |
 | Battery | `power_supply` `nintendo_switch_controller_battery_<hid id>`; `capacity` file not readable as shell |
 | Player LEDs | Four green + one blue (`…:player-1`…`player-5`) under `leds` |
+| `EVIOCGRAB` as shell uid | Works. Grabbed left Joy-Con: a second reader saw 0 events, the grabbing process saw all; ungrabbed: 1,135 and 1,511 lines (TB305FU, 2026-10-15) |
+| Node identity | Shell can't read sysfs, but `EVIOCGID`/`EVIOCGUNIQ` on an opened node give vendor, product and MAC |
+| Android descriptor | `sha1(":%04x:%04x:uniqueId:%s")` of vendor, product and the MAC, matching `InputDevice.getDescriptor()`; how a node is matched to its `InputDevice` |
 | Idle IMU | About 1.5 kHz of events per Joy-Con; filter by device before decoding |
 
 ### Left Joy-Con, node `event5`
@@ -61,7 +64,8 @@ expected to match. A sideways Joy-Con's SL/SR sit on opposite shoulder codes per
 ## Unconfirmed
 
 1. Left stick up direction (expected negative Y).
-2. `EVIOCGRAB` as shell uid: needs the Phase 3 reader.
+2. The grab after the app is killed mid-grab (helper should exit on stdin EOF).
 3. Reconnect after power-off by button press.
-4. PXPlay with the existing generic UHID pad (and, separately, with a merged Joy-Con pair).
+4. PXPlay with the merged pad. A grabbed Joy-Con is still enumerated by Android, only silent, which may
+   confuse a picker.
 5. Other devices: AYN Thor, Retroid Pocket Nova, and an Android 11 device.

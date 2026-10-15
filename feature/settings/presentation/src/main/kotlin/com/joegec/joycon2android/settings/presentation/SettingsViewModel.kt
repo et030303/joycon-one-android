@@ -6,6 +6,7 @@ import com.joegec.joycon2android.settings.ObserveOutputSettingsUseCase
 import com.joegec.joycon2android.settings.OutputSettings
 import com.joegec.joycon2android.settings.SetBlockDeviceMotionUseCase
 import com.joegec.joycon2android.settings.SetFasterUpdatesUseCase
+import com.joegec.joycon2android.settings.SetRemotePlayFaceButtonsUseCase
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
@@ -15,6 +16,7 @@ class SettingsViewModel(
     observeOutputSettings: ObserveOutputSettingsUseCase,
     private val setFasterUpdates: SetFasterUpdatesUseCase,
     private val setBlockDeviceMotion: SetBlockDeviceMotionUseCase,
+    private val setRemotePlayFaceButtons: SetRemotePlayFaceButtonsUseCase,
 ) : ViewModel() {
 
     val outputSettings: StateFlow<OutputSettings> = observeOutputSettings()
@@ -26,6 +28,10 @@ class SettingsViewModel(
 
     fun toggleBlockDeviceMotion(enabled: Boolean) {
         viewModelScope.launch { setBlockDeviceMotion(enabled) }
+    }
+
+    fun toggleRemotePlayFaceButtons(enabled: Boolean) {
+        viewModelScope.launch { setRemotePlayFaceButtons(enabled) }
     }
 
     private companion object {

@@ -40,6 +40,35 @@ class ReportMapperTest {
         return Integer.numberOfTrailingZeros(word)
     }
 
+    private fun remotePlayBitOf(button: JoyconButton): Int {
+        val r = ReportMapper.buildReport(GamepadFrame(proPlayer(button), remotePlayFaceButtons = true))
+        val word = (r[0].toInt() and 0xFF) or ((r[1].toInt() and 0xFF) shl 8)
+        return Integer.numberOfTrailingZeros(word)
+    }
+
+    @Test
+    fun `remote play swaps A with B and X with Y`() {
+        assertEquals(1, remotePlayBitOf(JoyconButton.A))
+        assertEquals(0, remotePlayBitOf(JoyconButton.B))
+        assertEquals(4, remotePlayBitOf(JoyconButton.X))
+        assertEquals(3, remotePlayBitOf(JoyconButton.Y))
+    }
+
+    @Test
+    fun `remote play leaves every other button where it was`() {
+        val faceOrDpad = listOf(
+            JoyconButton.A, JoyconButton.B, JoyconButton.X, JoyconButton.Y,
+            JoyconButton.Up, JoyconButton.Down, JoyconButton.Left, JoyconButton.Right,
+        )
+        val unchanged = JoyconButton.entries - faceOrDpad
+        val moved = unchanged.filter { button ->
+            val normal = ReportMapper.buildReport(GamepadFrame(proPlayer(button)))
+            val remote = ReportMapper.buildReport(GamepadFrame(proPlayer(button), remotePlayFaceButtons = true))
+            !normal.contentEquals(remote)
+        }
+        assertEquals(emptyList<JoyconButton>(), moved)
+    }
+
     @Test
     fun `each button takes the bit whose keycode carries its name`() {
         val expected = mapOf(

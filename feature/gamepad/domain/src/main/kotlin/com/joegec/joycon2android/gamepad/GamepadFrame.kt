@@ -3,7 +3,12 @@ package com.joegec.joycon2android.gamepad
 import com.joegec.joycon2android.model.AndroidKey
 import com.joegec.joycon2android.model.PlayerState
 
-data class GamepadFrame(val state: PlayerState, val androidKeys: Set<AndroidKey> = emptySet()) {
+data class GamepadFrame(
+    val state: PlayerState,
+    val androidKeys: Set<AndroidKey> = emptySet(),
+    /** A, B, X, Y by position instead of name: docs/virtual-gamepad.md#remote-play-face-buttons */
+    val remotePlayFaceButtons: Boolean = false,
+) {
     companion object {
         /** Screenshot goes through the shell instead: docs/virtual-gamepad.md#android-keys */
         val SENDABLE_KEYS = setOf(AndroidKey.HOME, AndroidKey.BACK)

@@ -153,7 +153,9 @@ snapshot the screen renders.
 ## Data & control flow
 
 ```
-BLE notify ─→ Joycon2Manager (connection/data, ControllerRepository)
+BLE notify ─→ Joycon2Manager (connection/data, ControllerRepository) ─┐
+                                                                       ├─→ CompositeControllerRepository
+Switch 1: InputDeviceWatcher + evdev_reader (shell, via Shizuku) ─→ HidControllerSource ─┘
                    │
                    ▼
             SessionCoordinator (core/session) ── combines connections + assignments
@@ -163,6 +165,13 @@ BLE notify ─→ Joycon2Manager (connection/data, ControllerRepository)
                    │      └─→ PushDsuPadDataUseCase   ─→ DsuServer    ─→ UDP :26760 ─→ emulators
                    └─→ ObserveSessionUseCase   ─→ Joycon2ViewModel ─→ AppUiState ─→ Compose
 ```
+
+`CompositeControllerRepository` (connection domain) concatenates the controller lists and sends each
+per-controller call to the source that lists the address. Switch 1 Joy-Cons are `hid:<descriptor>`
+addresses; `HidControllerSource` grabs a Joy-Con while a player is assigned (`setPlayerLed`) and
+releases it when unassigned. Shizuku reaches the connection feature through `PrivilegedLauncherProvider`,
+bound in `AppContainer`, because features may not depend on each other. Detail:
+[switch1.md](switch1.md).
 
 The gamepad and DSU outputs ride the coordinator's **synchronous** `onState` callback, not a
 conflated `StateFlow`, which would drop motion samples. Hardware detail:

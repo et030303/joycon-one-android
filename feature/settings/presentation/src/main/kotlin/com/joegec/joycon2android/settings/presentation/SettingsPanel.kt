@@ -21,6 +21,7 @@ fun SettingsPanel(
     onViewModeChange: (ConnectionViewMode) -> Unit,
     onFasterUpdatesToggle: (Boolean) -> Unit,
     onBlockDeviceMotionToggle: (Boolean) -> Unit,
+    onRemotePlayFaceButtonsToggle: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -54,6 +55,15 @@ fun SettingsPanel(
                 titleStyle = MaterialTheme.typography.titleMedium,
                 warning = if (state.deviceMotionBlockAvailable) null
                 else stringResource(R.string.settings_block_device_motion_needs_shizuku),
+            )
+        }
+        SettingsSection {
+            SettingSwitch(
+                title = stringResource(R.string.settings_remote_play_face_buttons_title),
+                description = stringResource(R.string.settings_remote_play_face_buttons_description),
+                checked = state.outputSettings.remotePlayFaceButtons,
+                onCheckedChange = onRemotePlayFaceButtonsToggle,
+                titleStyle = MaterialTheme.typography.titleMedium,
             )
         }
     }

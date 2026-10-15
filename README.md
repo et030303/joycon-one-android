@@ -1,19 +1,28 @@
-# Joycon2Android
+# JoyconOneAndroid
 
-[![Latest release](https://img.shields.io/github/v/release/JoeGeC/joycon2android)](../../releases/latest)
-[![Downloads](https://img.shields.io/github/downloads/JoeGeC/joycon2android/total)](../../releases)
+[![Latest release](https://img.shields.io/github/v/release/RKGman/joycon-one-android)](../../releases/latest)
+[![Downloads](https://img.shields.io/github/downloads/RKGman/joycon-one-android/total)](../../releases)
 [![Android 7.0+](https://img.shields.io/badge/Android-7.0%2B-3DDC84?logo=android&logoColor=white)](#what-you-need)
-[![License: GPL-3.0](https://img.shields.io/github/license/JoeGeC/joycon2android)](LICENSE)
+[![License: GPL-3.0](https://img.shields.io/github/license/RKGman/joycon-one-android)](LICENSE)
 [![Support on Ko-fi](https://img.shields.io/badge/Ko--fi-support-FF5E5B?logo=kofi&logoColor=white)](https://ko-fi.com/joestechprojects)
 
-Use Nintendo Switch 2 **Joy-Con 2** and **Pro Controllers** on Android — as gamepads in any app, and
-with motion in emulators.
+Use Nintendo Switch **Joy-Cons** on Android — original Switch 1 Joy-Cons and Switch 2 **Joy-Con 2** and
+**Pro Controllers** — as gamepads in any app, and with motion in emulators.
 
-Android can't pair these controllers from its Bluetooth settings, because they use their own BLE
-protocol rather than standard HID. Joycon2Android connects to them itself and presents each player
-as an ordinary gamepad.
+A fork of [JoeGeC/joycon2android](https://github.com/JoeGeC/joycon2android) that adds Switch 1 Joy-Cons.
+The package ID is unchanged, so it installs over the original and its settings carry over.
+
+- **Switch 2 controllers** can't be paired from Android's Bluetooth settings, because they use their own
+  BLE protocol rather than standard HID. The app connects to them itself.
+- **Switch 1 Joy-Cons** pair from Android's Bluetooth settings like any gamepad. The app reads them
+  through Shizuku, merges a left and right Joy-Con into one controller and presents it as a virtual
+  gamepad, so remote-play apps such as PXPlay see a single device.
 
 ## Features
+
+- **Switch 1 Joy-Cons** (Android 11+) — pair a left and right Joy-Con, assign them to one player and
+  they appear as a single gamepad. Buttons and sticks only; no motion yet
+  ([status](#switch-1-joy-cons)).
 
 - **Joy-Con 2, Switch 2 Pro Controller and NSO GameCube controller** — connect several at once, GL/GR
   paddles included.
@@ -35,13 +44,15 @@ as an ordinary gamepad.
 
 ### What you need
 
-- Android 7.0 (API 24) or newer, with Bluetooth LE
-- Joy-Con 2, a Switch 2 Pro Controller or an NSO GameCube controller
+- Android 7.0 (API 24) or newer, with Bluetooth LE — **Android 11 (API 30) or newer for Switch 1
+  Joy-Cons**
+- Joy-Con 2, a Switch 2 Pro Controller, an NSO GameCube controller, or a pair of Switch 1 Joy-Cons
 - [Shizuku](https://shizuku.rikka.app/), for the virtual gamepad and emulator auto setup — DSU motion
   works without it
 
 > [!IMPORTANT]
-> Press **SYNC** every time you connect. Only a Switch 2 can wake a controller back up from a button
+> Switch 2 controllers: press **SYNC** every time you connect. Switch 1 Joy-Cons don't need it — see
+> [Switch 1 Joy-Cons](#switch-1-joy-cons). Only a Switch 2 can wake a controller back up from a button
 > press ([why](docs/protocol.md#why-sync-is-needed-every-time)).
 
 ### 1. Install
@@ -64,6 +75,37 @@ as an ordinary gamepad.
 3. If a controller shows as the wrong type, tap its type at the top of its card and pick the right one
    before assigning it. The choice is remembered for that controller; **Auto** goes back to what it
    reports.
+
+### Switch 1 Joy-Cons
+
+Supported on Android 11 and newer. **Tested only on Android 15** (a Lenovo TB305FU tablet, one left and
+one right Joy-Con); other devices and versions should work but haven't been tried. Shizuku is required,
+because the app has to read the controller's input and take it over from Android.
+
+1. Pair each Joy-Con in Android's **Bluetooth settings**: hold the small sync button on its rail until
+   its lights run, then pick it from the list.
+2. Open the app. Each paired Joy-Con shows as a card. The first time, allow Shizuku when asked.
+3. Assign a left and a right Joy-Con to the **same player** — from the app, or press **L** on one and
+   **R** on the other. A single Joy-Con on its own works held sideways.
+4. [Turn on the virtual gamepad](#3-turn-on-the-virtual-gamepad). While a Joy-Con is assigned, the app
+   takes it over, so games see only the merged gamepad; unassign it and it goes back to being a normal
+   Android controller.
+
+What works today and what doesn't:
+
+| | Switch 1 Joy-Con |
+|---|---|
+| Buttons, sticks, D-pad | Works |
+| Merged left + right virtual gamepad | Works; accepted by PXPlay |
+| Motion (gyro, accelerometer) and the DSU server | Not built yet |
+| Emulator auto setup (Eden, Dolphin) | Untested with Switch 1 Joy-Cons |
+| Battery level and shell colour | Not shown |
+| Rumble | Not supported |
+| Disconnecting from the app | Use Android's Bluetooth settings |
+
+**PlayStation remote play (PXPlay).** Android names the bottom face button A, so by default a Joy-Con's
+right-hand A lands on PlayStation's Cross. Turn on **Remote play face buttons** in Settings to swap A↔B
+and X↔Y. Leave it off for emulators.
 
 ### 3. Turn on the virtual gamepad
 
@@ -246,8 +288,12 @@ shoulder buttons.
 | Problem | Fix |
 |---|---|
 | "Shizuku is not running" | Open Shizuku and start it |
-| "Shizuku permission denied" | Shizuku → Apps → allow Joycon2Android |
+| "Shizuku permission denied" | Shizuku → Apps → allow JoyconOneAndroid |
 | Controller not found | Hold SYNC again and move closer |
+| Switch 1 Joy-Con shows but nothing responds | Shizuku must be running with access allowed; then tap Scan. The card stays in its setting-up state until the app has the controller |
+| "Switch 1 Joy-Cons need Shizuku" | Start Shizuku (it stops on reboot), grant access, then tap Scan |
+| Switch 1 Joy-Con missing from the list | Check it appears in Android's Bluetooth settings as connected; Android 11 or newer is required |
+| A and B, or X and Y, are swapped in PXPlay | Turn on **Remote play face buttons** in Settings |
 | Controller shows as the wrong type (stick turned sideways, no right stick) | Tap its type at the top of its card, pick the right one, then assign it |
 | Controller stops responding | Press SYNC and reconnect; wait a moment if it stays silent |
 | Controller shows "Connection lost" | Press SYNC on it and it reconnects to the same player by itself, or tap Scan. After two minutes it's removed |
@@ -273,6 +319,7 @@ Start with [CONTRIBUTING.md](CONTRIBUTING.md), then the [docs](docs/README.md):
 
 - [Architecture](docs/architecture.md) and [adding a feature](docs/adding-a-feature.md)
 - [BLE protocol](docs/protocol.md) — identifiers, packets, Android BLE gotchas
+- [Switch 1 Joy-Cons](docs/switch1.md) — what the kernel exposes, measured; [plan](docs/switch1-support-plan.md)
 - [Virtual gamepad](docs/virtual-gamepad.md) — UHID, keycodes, sideways Joy-Cons
 - [DSU motion](docs/dsu-motion.md) — slots, motion frames, emulator mapping details
 - [Debug tools](tools/README.md) — a DSU client for inspecting the stream
@@ -285,6 +332,12 @@ Start with [CONTRIBUTING.md](CONTRIBUTING.md), then the [docs](docs/README.md):
   Joy-Cons, tested on NYXI Hyperion 3 ([#26](https://github.com/JoeGeC/joycon2android/pull/26)).
 - **[thisishuey](https://github.com/thisishuey)** — controller buttons for Android's Home, Back and
   Screenshot ([#31](https://github.com/JoeGeC/joycon2android/pull/31)).
+
+### Fork
+
+Built on **[JoeGeC/joycon2android](https://github.com/JoeGeC/joycon2android)**, which provides everything
+for Switch 2 controllers, the virtual gamepad, DSU motion and emulator setup. This fork adds Switch 1
+Joy-Cons.
 
 ### Community projects
 

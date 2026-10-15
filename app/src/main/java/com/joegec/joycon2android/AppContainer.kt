@@ -1,6 +1,8 @@
 package com.joegec.joycon2android
 
 import android.content.Context
+import android.os.Build
+import com.joegec.joycon2android.connection.CompositeControllerRepository
 import com.joegec.joycon2android.connection.ConnectionPriorityRepository
 import com.joegec.joycon2android.connection.ControllerRepository
 import com.joegec.joycon2android.connection.ControllerTypePreferencesDataStore
@@ -13,6 +15,9 @@ import com.joegec.joycon2android.connection.StartScanUseCase
 import com.joegec.joycon2android.connection.StopScanUseCase
 import com.joegec.joycon2android.connection.ViewModePreferences
 import com.joegec.joycon2android.connection.ViewModePreferencesDataStore
+import com.joegec.joycon2android.connection.hid.HidControllerSource
+import com.joegec.joycon2android.connection.hid.InputDeviceWatcher
+import com.joegec.joycon2android.connection.hid.PrivilegedLauncherProvider
 import com.joegec.joycon2android.androidkeys.AndroidKeyRouter
 import com.joegec.joycon2android.androidkeys.OutputAndroidKeys
 import com.joegec.joycon2android.androidkeys.ShellAndroidKeyPresser
@@ -79,6 +84,7 @@ import com.joegec.joycon2android.settings.OutputSettingsRepository
 import com.joegec.joycon2android.settings.SetBlockDeviceMotionUseCase
 import com.joegec.joycon2android.settings.SetDeviceMotionBlockedUseCase
 import com.joegec.joycon2android.settings.SetFasterUpdatesUseCase
+import com.joegec.joycon2android.settings.SetRemotePlayFaceButtonsUseCase
 import com.joegec.joycon2android.emulator.EdenDeviceMotionBlocker
 import com.joegec.joycon2android.gamepad.DisableGamepadUseCase
 import com.joegec.joycon2android.gamepad.EnableGamepadUseCase
@@ -123,7 +129,19 @@ class AppContainer(context: Context) {
 
     // --- Connection (BLE) ---
     private val joycon2Manager = Joycon2Manager(appContext, scope, ControllerTypePreferencesDataStore(appContext))
-    val controllerRepository: ControllerRepository = joycon2Manager
+    private val privilegedAccess = PrivilegedAccess()
+    private val inputDeviceWatcher = InputDeviceWatcher(appContext)
+        .also { if (Build.VERSION.SDK_INT >= SWITCH1_MIN_SDK) it.start() }
+    private val hidControllerSource = HidControllerSource(
+        appContext,
+        scope,
+        inputDeviceWatcher,
+        PrivilegedLauncherProvider { onResult ->
+            privilegedAccess.acquire { shell -> onResult(shell?.let(::ShellPrivilegedLauncher)) }
+        },
+    )
+    val controllerRepository: ControllerRepository =
+        CompositeControllerRepository(scope, listOf(joycon2Manager, hidControllerSource))
     private val connectionPriorityRepository: ConnectionPriorityRepository = joycon2Manager
     private val setHighConnectionPriority = SetHighConnectionPriorityUseCase(connectionPriorityRepository)
     val startScan = StartScanUseCase(controllerRepository)
@@ -188,12 +206,14 @@ class AppContainer(context: Context) {
     val observeOutputSettings = ObserveOutputSettingsUseCase(outputSettings)
     val setFasterUpdates = SetFasterUpdatesUseCase(outputSettings)
     val setBlockDeviceMotion = SetBlockDeviceMotionUseCase(outputSettings)
+    val setRemotePlayFaceButtons = SetRemotePlayFaceButtonsUseCase(outputSettings)
+    private val remotePlayFaceButtons = observeOutputSettings().map { it.remotePlayFaceButtons }
+        .stateIn(scope, SharingStarted.Eagerly, false)
 
     // --- Assignment ---
     val assignmentRepository: AssignmentRepository = PlayerAssignmentManager()
 
     // --- Gamepad + privileged access ---
-    private val privilegedAccess = PrivilegedAccess()
     private val gamepadRepository: GamepadRepository =
         GamepadOutput(scope, GamepadManager(scope, appContext), privilegedAccess::acquire)
 
@@ -267,7 +287,7 @@ class AppContainer(context: Context) {
         onState = { state ->
             activeBodies.value = state.activePlayers.mapNotNull { it.body() }
             val routed = androidKeyRouter.route(state)
-            pushGamepadState(routed.gamepad)
+            pushGamepadState(routed.gamepad.map { it.copy(remotePlayFaceButtons = remotePlayFaceButtons.value) })
             pushDsuPadData(routed.dsu)
         },
         onPlayerAssigned = { onPlayerAssigned(it) },
@@ -306,7 +326,8 @@ class AppContainer(context: Context) {
     }
 
     private companion object {
-        const val GITHUB_REPOSITORY = "JoeGeC/joycon2android"
+        const val GITHUB_REPOSITORY = "RKGman/joycon-one-android"
         const val UPDATE_CACHE_DIRECTORY = "updates"
+        const val SWITCH1_MIN_SDK = Build.VERSION_CODES.R
     }
 }

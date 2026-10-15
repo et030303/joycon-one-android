@@ -3,7 +3,8 @@
 ## Language & Frameworks
 - Kotlin, Jetpack Compose, Material 3
 - Target: Android API 24+ (minSdk 24, targetSdk 36)
-- BLE (BluetoothGatt) for Joy-Con 2 communication
+- BLE (BluetoothGatt) for Joy-Con 2 communication; Switch 1 Joy-Cons arrive as Android input devices and
+  are read from `/dev/input` by a native helper run through Shizuku ([docs/switch1.md](docs/switch1.md))
 
 ## Code Style
 - Follow current Android, Kotlin, and Compose conventions
